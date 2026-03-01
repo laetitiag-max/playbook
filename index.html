@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upscale Playbook — Système de Production de Formations</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0f1f3d;
+  --navy-light: #1a3260;
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --white: #ffffff;
+  --off-white: #f7f8fc;
+  --gray-100: #eef0f6;
+  --gray-200: #dde2ef;
+  --gray-500: #7a8099;
+  --success: #2ecc71;
+  --warn: #f39c12;
+  --danger: #e74c3c;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:var(--off-white); color:var(--navy); }
+
+/* HEADER */
+.hero {
+  background:linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  padding:60px 48px 52px;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before {
+  content:'';
+  position:absolute;
+  top:-40%;right:-5%;
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(201,168,76,0.1) 0%,transparent 70%);
+}
+.hero::after {
+  content:'PLAYBOOK';
+  position:absolute;
+  bottom:-20px;right:40px;
+  font-family:'Playfair Display',serif;
+  font-size:120px;
+  font-weight:900;
+  color:rgba(255,255,255,0.03);
+  letter-spacing:-4px;
+  pointer-events:none;
+}
+.hero-tag {
+  display:inline-block;
+  background:rgba(201,168,76,0.15);
+  border:1px solid rgba(201,168,76,0.3);
+  color:var(--gold);
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  padding:5px 14px;border-radius:20px;margin-bottom:20px;
+}
+.hero h1 {
+  font-family:'Playfair Display',serif;
+  font-size:48px;font-weight:900;
+  color:var(--white);line-height:1.1;
+  margin-bottom:16px;
+}
+.hero h1 em { color:var(--gold);font-style:normal; }
+.hero-sub {
+  font-size:16px;color:rgba(255,255,255,0.6);
+  max-width:560px;line-height:1.7;margin-bottom:36px;
+}
+.hero-stats { display:flex;gap:36px;flex-wrap:wrap; }
+.hero-stat-n { font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--gold); }
+.hero-stat-l { font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px; }
+
+/* NAV */
+.sticky-nav {
+  background:var(--white);
+  border-bottom:1px solid var(--gray-100);
+  padding:0 48px;
+  display:flex;gap:0;
+  overflow-x:auto;
+  position:sticky;top:0;z-index:50;
+}
+.nav-tab {
+  padding:16px 20px;
+  font-size:13px;font-weight:500;color:var(--gray-500);
+  cursor:pointer;border-bottom:2px solid transparent;
+  white-space:nowrap;transition:all 0.2s;
+}
+.nav-tab:hover { color:var(--navy); }
+.nav-tab.active { color:var(--navy);border-bottom-color:var(--gold);font-weight:600; }
+
+/* CONTENT */
+.content { max-width:860px;margin:0 auto;padding:48px; }
+.section { display:none; }
+.section.active { display:block; }
+
+/* BLOCKS */
+.block {
+  background:var(--white);border-radius:20px;
+  padding:36px;margin-bottom:24px;
+  border:1px solid var(--gray-100);
+}
+.block-title {
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold);font-weight:600;margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+}
+.block h2 {
+  font-family:'Playfair Display',serif;
+  font-size:22px;color:var(--navy);margin-bottom:14px;
+}
+.block h3 {
+  font-size:15px;font-weight:600;color:var(--navy);
+  margin:20px 0 10px;
+}
+.block p { font-size:14px;line-height:1.8;color:#3a4a6b;margin-bottom:10px; }
+.block p:last-child { margin-bottom:0; }
+
+/* CHECKLIST */
+.checklist { list-style:none;margin-top:8px; }
+.checklist li {
+  display:flex;gap:12px;align-items:flex-start;
+  padding:10px 0;border-bottom:1px solid var(--gray-100);
+  font-size:14px;color:var(--navy);line-height:1.5;
+}
+.checklist li:last-child { border-bottom:none; }
+.check-icon {
+  width:22px;height:22px;border-radius:6px;
+  background:var(--navy);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;flex-shrink:0;margin-top:1px;
+}
+
+/* PROMPT BOX */
+.prompt-box {
+  background:#0d1b35;border-radius:14px;
+  padding:24px 28px;margin:16px 0;
+  position:relative;overflow:hidden;
+}
+.prompt-box::before {
+  content:'PROMPT';
+  position:absolute;top:12px;right:16px;
+  font-size:9px;letter-spacing:2px;
+  color:rgba(201,168,76,0.4);font-weight:600;
+}
+.prompt-box pre {
+  font-family:'Courier New',monospace;
+  font-size:12px;line-height:1.7;
+  color:rgba(255,255,255,0.85);
+  white-space:pre-wrap;word-break:break-word;
+}
+.prompt-box .prompt-label {
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold);font-weight:600;margin-bottom:12px;
+}
+.copy-btn {
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);
+  color:var(--gold);font-size:11px;font-weight:600;
+  padding:6px 14px;border-radius:20px;cursor:pointer;
+  margin-top:14px;transition:all 0.2s;
+  font-family:'DM Sans',sans-serif;border:none;
+}
+.copy-btn:hover { background:rgba(201,168,76,0.25); }
+
+/* ERREUR/CONSEIL */
+.alert {
+  border-radius:12px;padding:16px 20px;
+  margin:12px 0;font-size:13px;line-height:1.6;
+}
+.alert-danger { background:#fef2f2;border-left:4px solid var(--danger);color:#7f1d1d; }
+.alert-success { background:#f0fdf4;border-left:4px solid var(--success);color:#14532d; }
+.alert-warn { background:#fffbeb;border-left:4px solid var(--warn);color:#78350f; }
+.alert-navy { background:linear-gradient(135deg,var(--navy),var(--navy-light));border-left:4px solid var(--gold);color:rgba(255,255,255,0.85); }
+.alert strong { display:block;margin-bottom:4px; }
+
+/* OUTILS */
+.tools-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px; }
+.tool-card {
+  background:var(--off-white);border-radius:12px;
+  padding:16px;border:1px solid var(--gray-100);
+  transition:all 0.2s;
+}
+.tool-card:hover { border-color:var(--gold);transform:translateY(-2px); }
+.tool-icon { font-size:24px;margin-bottom:10px;display:block; }
+.tool-name { font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px; }
+.tool-desc { font-size:12px;color:var(--gray-500);line-height:1.5;margin-bottom:8px; }
+.tool-link {
+  font-size:11px;color:var(--gold);font-weight:600;
+  text-decoration:none;
+}
+.tool-link:hover { text-decoration:underline; }
+.tool-badge {
+  display:inline-block;
+  background:rgba(46,204,113,0.1);color:#166534;
+  font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;margin-bottom:6px;
+}
+
+/* PLANNING */
+.planning-grid { display:flex;flex-direction:column;gap:12px;margin-top:12px; }
+.planning-week {
+  background:var(--off-white);border-radius:14px;
+  overflow:hidden;border:1px solid var(--gray-100);
+}
+.planning-week-header {
+  background:linear-gradient(135deg,var(--navy),var(--navy-light));
+  padding:14px 20px;
+  display:flex;align-items:center;gap:12px;cursor:pointer;
+  transition:all 0.2s;
+}
+.planning-week-header:hover { opacity:0.9; }
+.planning-week-num {
+  background:rgba(201,168,76,0.2);color:var(--gold);
+  font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;
+  white-space:nowrap;
+}
+.planning-week-title { font-size:14px;font-weight:600;color:var(--white);flex:1; }
+.planning-week-toggle { color:rgba(255,255,255,0.5);font-size:12px;transition:transform 0.3s; }
+.planning-week-toggle.open { transform:rotate(180deg); }
+.planning-week-body { padding:16px 20px;display:none; }
+.planning-week-body.open { display:block; }
+.planning-day {
+  display:flex;gap:14px;padding:10px 0;
+  border-bottom:1px solid var(--gray-100);
+}
+.planning-day:last-child { border-bottom:none; }
+.planning-day-label {
+  font-size:11px;font-weight:700;color:var(--gold);
+  width:80px;flex-shrink:0;padding-top:2px;
+}
+.planning-day-tasks { font-size:13px;color:var(--navy);line-height:1.6; }
+.planning-day-tasks span {
+  display:block;padding:2px 0;
+}
+
+/* PIPE */
+.pipeline {
+  display:flex;flex-direction:column;gap:0;margin-top:16px;
+}
+.pipe-step {
+  display:flex;gap:16px;align-items:flex-start;
+  padding:18px 0;border-bottom:1px solid var(--gray-100);
+  position:relative;
+}
+.pipe-step:last-child { border-bottom:none; }
+.pipe-num {
+  width:36px;height:36px;border-radius:50%;
+  background:var(--navy);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:16px;font-weight:700;
+  flex-shrink:0;
+}
+.pipe-content { flex:1; }
+.pipe-title { font-size:14px;font-weight:600;color:var(--navy);margin-bottom:5px; }
+.pipe-desc { font-size:13px;color:var(--gray-500);line-height:1.6; }
+.pipe-tag {
+  display:inline-block;margin-top:6px;
+  background:var(--gray-100);color:var(--navy);
+  font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;
+}
+
+/* TOAST */
+.toast {
+  position:fixed;bottom:24px;right:24px;
+  background:var(--navy);color:var(--white);
+  padding:13px 20px;border-radius:12px;
+  font-size:13px;font-weight:500;
+  border-left:3px solid var(--gold);
+  transform:translateY(80px);opacity:0;
+  transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  z-index:1000;
+}
+.toast.show { transform:translateY(0);opacity:1; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)} }
+.animate-in { animation:fadeUp 0.4s ease forwards; }
+
+@media(max-width:768px){
+  .hero { padding:36px 24px; }
+  .hero h1 { font-size:32px; }
+  .content { padding:24px 18px; }
+  .sticky-nav { padding:0 18px; }
+  .block { padding:24px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">🚀 Upscale — Mode d'emploi</div>
+  <h1>Le Playbook<br><em>Formations</em></h1>
+  <p class="hero-sub">Ton système complet pour produire une formation professionnelle de A à Z — prompts, checklists, outils, planning. Reproduisible à l'infini sur n'importe quel sujet.</p>
+  <div class="hero-stats">
+    <div><div class="hero-stat-n">6</div><div class="hero-stat-l">Étapes clés</div></div>
+    <div><div class="hero-stat-n">12+</div><div class="hero-stat-l">Prompts copy-paste</div></div>
+    <div><div class="hero-stat-n">4</div><div class="hero-stat-l">Semaines de prod</div></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="sticky-nav">
+  <div class="nav-tab active" onclick="showSection('etude')">🔍 Étude de marché</div>
+  <div class="nav-tab" onclick="showSection('production')">🏗️ Production</div>
+  <div class="nav-tab" onclick="showSection('prompts')">💬 Prompts</div>
+  <div class="nav-tab" onclick="showSection('webapp')">🖥️ Webapp</div>
+  <div class="nav-tab" onclick="showSection('lancement')">🚀 Lancement</div>
+  <div class="nav-tab" onclick="showSection('outils')">🛠️ Outils</div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════
+     SECTION 1 — ÉTUDE DE MARCHÉ
+═══════════════════════════════════ -->
+<div class="section active" id="etude">
+
+  <div class="block animate-in">
+    <div class="block-title">🔍 Étape 1</div>
+    <h2>Valider son sujet avant de produire</h2>
+    <p>La règle d'or : ne jamais produire une formation complète sans avoir validé que des gens veulent l'acheter. Une mini-validation en 48h vaut mieux que 3 semaines de travail sur le mauvais sujet.</p>
+
+    <h3>Les 5 questions à se poser</h3>
+    <ul class="checklist">
+      <li><div class="check-icon">1</div>Est-ce que mon public cible cherche activement une solution à ce problème ?</li>
+      <li><div class="check-icon">2</div>Est-ce qu'il existe déjà des formations sur ce sujet ? (Si oui → bonne nouvelle, le marché existe)</li>
+      <li><div class="check-icon">3</div>Quelle est ma valeur ajoutée par rapport à ce qui existe déjà ?</li>
+      <li><div class="check-icon">4</div>Mon public connaît-il le nom de la méthode ou cherche-t-il le problème qu'elle résout ?</li>
+      <li><div class="check-icon">5</div>Est-ce que je peux parler de ce sujet avec crédibilité ou expérience ?</li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <div class="block-title">⚡ Validation en 48h</div>
+    <h2>Le sondage LinkedIn en 10 minutes</h2>
+    <p>Avant de produire quoi que ce soit, poste ce type de sondage dans les groupes Facebook ou sur LinkedIn :</p>
+    <div class="prompt-box">
+      <div class="prompt-label">Exemple de post de validation</div>
+      <pre>Sondage rapide pour les entrepreneurs et freelances 👇
+
+Tu connais la méthode [NOM] ?
+
+A) Oui, je la pratique au quotidien
+B) J'en ai entendu parler mais je ne l'applique pas
+C) Jamais entendu parler
+
+Et surtout : quel est TON plus grand problème avec [thème général] ?
+👇 dis-moi en commentaire</pre>
+      <button class="copy-btn" onclick="copyText(this, 'Sondage rapide pour les entrepreneurs et freelances 👇\n\nTu connais la méthode [NOM] ?\n\nA) Oui, je la pratique au quotidien\nB) J\'en ai entendu parler mais je ne l\'applique pas\nC) Jamais entendu parler\n\nEt surtout : quel est TON plus grand problème avec [thème général] ?\n👇 dis-moi en commentaire')">📋 Copier</button>
+    </div>
+
+    <h3>Comment interpréter les résultats</h3>
+    <div class="alert alert-success"><strong>✅ Majorité A → Parfait</strong> Le marché est éduqué, tu peux vendre directement sur le nom de la méthode.</div>
+    <div class="alert alert-warn"><strong>⚡ Majorité B → Opportunité</strong> Les gens savent que ça existe mais ne l'appliquent pas. Ton angle = "enfin une formation qui rend GTD simple et applicable".</div>
+    <div class="alert alert-danger"><strong>🔄 Majorité C → Pivote le nom</strong> Ne vends pas "la méthode X" mais le problème qu'elle résout. Ex: au lieu de "Formation GTD", → "Comment vider ton cerveau et ne plus rien oublier".</div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">❌ Erreurs à éviter</div>
+    <div class="alert alert-danger"><strong>Erreur 1 — Choisir un sujet sans validation</strong> Peu importe si tu es passionné, vérifie toujours que quelqu'un est prêt à payer pour ça.</div>
+    <div class="alert alert-danger"><strong>Erreur 2 — Attendre d'avoir tout parfait pour tester</strong> Lance en bêta avec 5 personnes à prix réduit. Les retours réels valent 10x plus que tes suppositions.</div>
+    <div class="alert alert-danger"><strong>Erreur 3 — Ignorer la concurrence</strong> Si personne ne vend ce sujet, ce n'est pas une opportunité — c'est un signal d'alarme.</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════
+     SECTION 2 — PRODUCTION
+═══════════════════════════════════ -->
+<div class="section" id="production">
+
+  <div class="block animate-in">
+    <div class="block-title">🏗️ Étape 2</div>
+    <h2>Le pipeline de production</h2>
+    <p>Pour chaque formation, tu suis toujours ce pipeline dans cet ordre exact. Ne saute pas d'étape.</p>
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-num">1</div>
+        <div class="pipe-content">
+          <div class="pipe-title">Upload des sources dans NotebookLM</div>
+          <div class="pipe-desc">Charge tous tes PDFs, livres, articles sur le sujet. Minimum 3 sources solides. Plus tu as de sources de qualité, meilleure sera la formation générée.</div>
+          <span class="pipe-tag">📁 NotebookLM</span>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">2</div>
+        <div class="pipe-content">
+          <div class="pipe-title">Cadrage — Carte mentale + Briefing</div>
+          <div class="pipe-desc">Lance le Résumé Audio Briefing pour une vue macro. Génère la Carte Mentale pour valider la structure de ta formation. Ne commence pas à écrire sans cette étape.</div>
+          <span class="pipe-tag">🗺️ Carte Mentale + Audio Briefing</span>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">3</div>
+        <div class="pipe-content">
+          <div class="pipe-title">Intégration du prompt principal</div>
+          <div class="pipe-desc">Colle le prompt V4 (avec système de modes) dans les Instructions Personnalisées de NotebookLM. Vérifie que les deux modes fonctionnent avant de commencer.</div>
+          <span class="pipe-tag">💬 Instructions personnalisées</span>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">4</div>
+        <div class="pipe-content">
+          <div class="pipe-title">Génération du plan de formation</div>
+          <div class="pipe-desc">Demande au Chat de générer le plan complet : titre, promesse, liste des modules avec objectifs et durées. Valide-le avant de produire les modules.</div>
+          <span class="pipe-tag">📋 Chat NotebookLM</span>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">5</div>
+        <div class="pipe-content">
+          <div class="pipe-title">Production des modules (1 par demi-journée)</div>
+          <div class="pipe-desc">Génère chaque module avec "Crée le module [N]". Relis, ajuste avec le MODE COACH. Ne passe au suivant que quand le précédent est satisfaisant.</div>
+          <span class="pipe-tag">✍️ 1 module = 1 demi-journée</span>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">6</div>
+        <div class="pipe-content">
+          <div class="pipe-title">Production des ressources</div>
+          <div class="pipe-desc">Pour chaque module : podcast → infographie → slides → fiche d'apprentissage. Toutes les sources cochées + prompt précis = meilleur résultat.</div>
+          <span class="pipe-tag">🎨 Ressources visuelles + audio</span>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">7</div>
+        <div class="pipe-content">
+          <div class="pipe-title">Hébergement des fichiers</div>
+          <div class="pipe-desc">Upload audio (MP3/MP4) sur Cloudinary. Infographies et PDFs sur Google Drive (lien public). Organise par dossier : Upscale / Module N / fichiers.</div>
+          <span class="pipe-tag">☁️ Cloudinary + Google Drive</span>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">8</div>
+        <div class="pipe-content">
+          <div class="pipe-title">Intégration dans la Webapp</div>
+          <div class="pipe-desc">Fournis à Claude : texte du module + liens Cloudinary audio + liens Drive infographie/slides. Claude met tout à jour dans la webapp. Tu déploies sur Vercel.</div>
+          <span class="pipe-tag">🖥️ Webapp + Vercel</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">✅ Checklist module complet</div>
+    <h2>Ce qui constitue un module 100% prêt</h2>
+    <ul class="checklist">
+      <li><div class="check-icon">✓</div>Texte complet du module (6 sections : accroche, concept, outils, erreurs, cas pratique, défi, quiz, transition)</li>
+      <li><div class="check-icon">✓</div>Podcast audio généré via NotebookLM (Analyse approfondie ou Briefing selon complexité)</li>
+      <li><div class="check-icon">✓</div>Infographie PNG générée et uploadée sur Cloudinary</li>
+      <li><div class="check-icon">✓</div>Présentation slides générée et uploadée sur Google Drive</li>
+      <li><div class="check-icon">✓</div>Fiche d'apprentissage générée (intégrée dans la webapp)</li>
+      <li><div class="check-icon">✓</div>Quiz testé personnellement (toutes les questions + corrections)</li>
+      <li><div class="check-icon">✓</div>Défi formulé en 4 temps (contexte, consigne, résultat attendu, conseil)</li>
+      <li><div class="check-icon">✓</div>Badge nommé et intégré dans la webapp</li>
+      <li><div class="check-icon">✓</div>Transition vers le module suivant rédigée</li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <div class="block-title">❌ Erreurs à éviter</div>
+    <div class="alert alert-danger"><strong>Erreur 1 — Produire tous les modules avant de tester</strong> Fais lire le module 1 à 3 personnes avant de continuer. Leurs retours peuvent changer toute ta structure.</div>
+    <div class="alert alert-danger"><strong>Erreur 2 — Trier ou analyser pendant la capture</strong> Lors de la phase de génération NotebookLM : laisse tout sortir, tu affineras après.</div>
+    <div class="alert alert-danger"><strong>Erreur 3 — Perfectionner indéfiniment</strong> 80% lancé > 100% jamais publié. Le bêta-test donne les vrais retours, pas ton perfectionnisme.</div>
+    <div class="alert alert-warn"><strong>💡 Règle d'or — 1 module par demi-journée</strong> Au-delà, la qualité baisse. Ton cerveau a besoin de pauses entre les modules pour garder de la créativité.</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════
+     SECTION 3 — PROMPTS
+═══════════════════════════════════ -->
+<div class="section" id="prompts">
+
+  <div class="block animate-in">
+    <div class="block-title">💬 Prompt Principal</div>
+    <h2>Instructions personnalisées NotebookLM</h2>
+    <p>Colle ce prompt dans <strong>Instructions personnalisées</strong> de ton NotebookLM avant de commencer. Il active le système de deux modes automatiques.</p>
+    <div class="prompt-box">
+      <div class="prompt-label">Prompt V4 — Système de modes</div>
+      <pre>Tu as deux modes. Détecte automatiquement lequel utiliser
+sans que j'aie besoin de le préciser.
+
+MODE CRÉATION → uniquement si ma demande contient
+"crée le module", "génère le module" ou "nouveau module".
+Tu suis alors la structure complète en 6 sections.
+
+MODE COACH → pour toute autre demande.
+Tu es mon partenaire expert, direct et bienveillant.
+
+Règles du MODE COACH :
+- Réponds uniquement à ce qui est demandé
+- Zéro introduction inutile : va droit au but
+- Adapte ta réponse au besoin exact
+- Reste cohérent avec le ton des modules existants
+- Si tu vois une amélioration évidente non demandée,
+  signale-la en une phrase après ta réponse
+- Si ambiguïté : pose UNE seule question de clarification
+- Ne reformate JAMAIS en structure de module complet
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎨 STYLE PÉDAGOGIQUE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Analogies et métaphores du quotidien pour chaque concept
+- Cas pratiques concrets (pro ET perso)
+- Ton coach bienveillant : direct, encourageant
+- Varie les profils : entrepreneur, freelance, salarié, parent
+- Alterne les genres dans les exemples
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏗️ STRUCTURE MODULE (MODE CRÉATION)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Minimum 900 mots utiles par module.
+
+1. 🎬 ACCROCHE "Et si..." (50-80 mots)
+2. 🧠 CONCEPT CLÉ (400-500 mots min.)
+   a) Analogie principale
+   b) Explication approfondie
+   c) Pourquoi ça marche
+   d) Outils recommandés (physique + numérique)
+      → profil / avantage / limite / astuce
+   e) Erreurs fréquentes (3 à 5)
+      → ❌ Erreur / 🔍 Pourquoi / ✅ Solution
+   f) 💡 À retenir (3 principes actionnables)
+3. 🔍 CAS PRATIQUE (150-200 mots)
+4. 🎯 DÉFI 24H (100-120 mots)
+5. 🏆 QUIZ GAMIFIÉ (4-5 questions)
+   → Q1-Q2 : mémorisation
+   → Q3-Q4 : application
+   → Q5 : mise en situation complexe (obligatoire)
+   → Correction détaillée pour chaque réponse
+6. 🔗 TRANSITION (50-80 mots)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎮 GAMIFICATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🥉 Modules 1-2 → "Apprenti [Sujet]"
+🥈 Modules 3-4 → "Praticien [Sujet]"
+🥇 Modules 5+ → "Maître [Sujet]"
+Badge créatif et unique par module.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ RÈGLES ABSOLUES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Sources du notebook uniquement
+- Max 3 concepts nouveaux par module
+- Module consommable en 15-20 min
+- Solutions toujours concrètes, jamais vagues
+- Chaque module se termine par une transition</pre>
+      <button class="copy-btn" onclick="copyPrompt(0)">📋 Copier ce prompt</button>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">📋 Prompts de génération</div>
+    <h2>Dans le Chat NotebookLM</h2>
+
+    <h3>Plan de formation</h3>
+    <div class="prompt-box">
+      <pre>Génère le plan complet de la formation [SUJET] avec :
+- Un titre accrocheur pour la formation
+- La promesse (ce que l'apprenant gagnera concrètement)
+- La liste des modules avec titre, objectif et durée
+- La progression des niveaux et badges</pre>
+      <button class="copy-btn" onclick="copyPrompt(1)">📋 Copier</button>
+    </div>
+
+    <h3>Créer un module</h3>
+    <div class="prompt-box">
+      <pre>Crée le module [N] — [Titre du module]
+en suivant la structure complète en 6 sections.</pre>
+      <button class="copy-btn" onclick="copyPrompt(2)">📋 Copier</button>
+    </div>
+
+    <h3>Vérification de cohérence globale</h3>
+    <div class="prompt-box">
+      <pre>Vérifie que la progression pédagogique est cohérente
+entre tous les modules :
+- Les concepts s'enchaînent-ils logiquement ?
+- Y a-t-il des répétitions inutiles ?
+- Y a-t-il des notions importantes manquantes ?
+- Le niveau de difficulté progresse-t-il bien ?</pre>
+      <button class="copy-btn" onclick="copyPrompt(3)">📋 Copier</button>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">🎨 Prompts Ressources</div>
+    <h2>Fonctionnalités NotebookLM</h2>
+    <p style="margin-bottom:16px">⚠️ Pour toutes ces ressources : <strong>coche TOUTES les sources ET tous les modules</strong> pour obtenir le meilleur résultat.</p>
+
+    <h3>🃏 Fiche d'apprentissage complète</h3>
+    <div class="prompt-box">
+      <pre>Crée une fiche d'apprentissage complète pour le module [N]
+— [Titre] uniquement.
+Format : utilisable sur écran ET imprimable.
+
+Structure obligatoire :
+🎯 EN-TÊTE : titre + niveau + badge + promesse en 1 phrase
+🧠 L'ESSENTIEL : analogie clé (2-3 lignes) + 3 règles d'or
+   + mécanisme "pourquoi ça marche" (2 lignes max)
+🛠️ MES OUTILS : tableau 3 colonnes Outil/Pour qui/Mon choix ✓
+   (3 physiques + 3 numériques + 1 ligne vide)
+❌ PIÈGES : 3 erreurs → solution en 5 mots max
+🎯 MON DÉFI : 3 lignes max + case à cocher + ligne "appris :"
+📝 MES NOTES : 3-4 lignes vides
+
+Contraintes : max 400 mots · langage ultra-condensé
+· lisible en 2 min · cohérent avec le ton du module</pre>
+      <button class="copy-btn" onclick="copyPrompt(4)">📋 Copier</button>
+    </div>
+
+    <h3>🎙️ Podcast — Analyse approfondie</h3>
+    <div class="prompt-box">
+      <pre>Génère un résumé audio "Analyse approfondie"
+pour le module [N] — [Titre] uniquement.
+Objectif : introduction avant lecture du module.
+Durée cible : 5-7 minutes.
+
+- Commence par l'accroche "Et si..." du module
+- Alterne entre présentation du problème,
+  analogie principale, 2-3 points clés en avant-goût,
+  défi annoncé comme une promesse
+- Termine : "Pour aller plus loin, retrouve
+  le module complet juste en dessous"
+- Ton dynamique et bienveillant
+- Ne révèle pas tout — donne envie, ne remplace pas le cours</pre>
+      <button class="copy-btn" onclick="copyPrompt(5)">📋 Copier</button>
+    </div>
+
+    <h3>🎙️ Podcast — Briefing (court)</h3>
+    <div class="prompt-box">
+      <pre>Génère un résumé audio "Briefing"
+pour le module [N] — [Titre] uniquement.
+Durée cible : 5-7 minutes. Ton : direct, coach, zéro blabla.
+
+Structure :
+· 30s : le problème que ce module résout
+· 1min : l'analogie principale simplifiée
+· 2min : les 3 points clés en avant-goût
+· 1min : le mécanisme "pourquoi ça marche"
+· 30s : le défi annoncé + invitation à lire le module
+
+Ne révèle pas les outils ni les erreurs fréquentes.</pre>
+      <button class="copy-btn" onclick="copyPrompt(6)">📋 Copier</button>
+    </div>
+
+    <h3>🖼️ Infographie</h3>
+    <div class="prompt-box">
+      <pre>Crée une infographie sur le concept de [thème] — module [N].
+Style : dynamique et motivant.
+Structure : 1 titre accrocheur + 5 points clés maximum
++ 1 phrase d'action finale.
+Utilise les analogies et le vocabulaire du module [N].</pre>
+      <button class="copy-btn" onclick="copyPrompt(7)">📋 Copier</button>
+    </div>
+
+    <h3>📊 Présentation slides</h3>
+    <div class="prompt-box">
+      <pre>Crée une présentation pour le module [N] — [Titre] uniquement.
+5 slides maximum :
+- Slide 1 : Accroche "Et si..." + promesse du module
+- Slides 2-3-4 : Les 3 points clés avec analogie visuelle
+- Slide 5 : Le défi + badge à débloquer
+Cohérent avec le ton et les analogies du module.</pre>
+      <button class="copy-btn" onclick="copyPrompt(8)">📋 Copier</button>
+    </div>
+
+    <h3>🗺️ Carte mentale globale</h3>
+    <div class="prompt-box">
+      <pre>Crée une carte mentale de toute la formation [SUJET].
+Nœud central : "[SUJET] — Passe au niveau supérieur"
+Branches principales : les concepts clés de chaque module
+Chaque branche : points clés + outils + erreurs.</pre>
+      <button class="copy-btn" onclick="copyPrompt(9)">📋 Copier</button>
+    </div>
+
+    <h3>📣 Article de blog marketing</h3>
+    <div class="prompt-box">
+      <pre>Génère un article de blog de 600 mots sur [concept].
+Ton : accessible et motivant.
+Structure : accroche → problème → solution
+→ exemple concret → appel à l'action vers la formation Upscale.</pre>
+      <button class="copy-btn" onclick="copyPrompt(10)">📋 Copier</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════
+     SECTION 4 — WEBAPP
+═══════════════════════════════════ -->
+<div class="section" id="webapp">
+
+  <div class="block animate-in">
+    <div class="block-title">🖥️ Étape 4</div>
+    <h2>Intégrer le contenu dans la Webapp</h2>
+    <p>Pour chaque module, voici exactement ce que tu fournis à Claude pour mettre à jour la webapp.</p>
+
+    <h3>Ce que tu fournis par module</h3>
+    <ul class="checklist">
+      <li><div class="check-icon">✍️</div><strong>Texte complet du module</strong> → copier-coller depuis NotebookLM directement dans le chat Claude</li>
+      <li><div class="check-icon">☁️</div><strong>Lien Cloudinary audio</strong> → format : https://res.cloudinary.com/[ton-id]/video/upload/[fichier].mp4</li>
+      <li><div class="check-icon">🖼️</div><strong>Lien Cloudinary infographie</strong> → format : https://res.cloudinary.com/[ton-id]/image/upload/[fichier].png</li>
+      <li><div class="check-icon">📊</div><strong>Lien Google Drive slides</strong> → lien de partage public depuis Drive</li>
+      <li><div class="check-icon">🏅</div><strong>Nom du badge</strong> → ex: "Le Nettoyeur de Cerveau"</li>
+    </ul>
+
+    <div class="alert alert-navy"><strong>💡 Règle simple</strong> Texte → copier-coller dans le chat. Fichiers (audio, images, PDFs) → lien hébergé en ligne.</div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">☁️ Hébergement des fichiers</div>
+    <h2>Cloudinary pour l'audio et les images</h2>
+
+    <h3>Pourquoi Cloudinary et pas Drive ?</h3>
+    <p>Google Drive bloque la lecture directe des fichiers dans les navigateurs pour des raisons de sécurité. Cloudinary est conçu pour diffuser des médias — l'audio se lance instantanément, les images s'affichent sans délai.</p>
+
+    <h3>Comment uploader sur Cloudinary</h3>
+    <ul class="checklist">
+      <li><div class="check-icon">1</div>Va sur cloudinary.com → crée un compte gratuit (connexion avec Google recommandée)</li>
+      <li><div class="check-icon">2</div>Dans le dashboard → clique sur "Media Library"</li>
+      <li><div class="check-icon">3</div>Clique sur "Upload" → sélectionne ton fichier MP3/MP4 ou PNG</li>
+      <li><div class="check-icon">4</div>Une fois uploadé → clique sur le fichier → "Copy URL"</li>
+      <li><div class="check-icon">5</div>Colle ce lien dans le chat Claude avec ton texte de module</li>
+    </ul>
+
+    <div class="alert alert-warn"><strong>⚠️ Organisation recommandée</strong> Crée un dossier par module dans Cloudinary : Module-1, Module-2... pour retrouver facilement tes fichiers.</div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">🚀 Déploiement Vercel</div>
+    <h2>Mettre en ligne en 5 étapes</h2>
+    <ul class="checklist">
+      <li><div class="check-icon">1</div><strong>GitHub</strong> → crée un compte → nouveau dépôt "upscale-[sujet]" → coche "Add README"</li>
+      <li><div class="check-icon">2</div><strong>Upload</strong> → "Add file" → "Upload files" → glisse ton fichier renommé en "index.html"</li>
+      <li><div class="check-icon">3</div><strong>Vercel</strong> → vercel.com → "Sign up" avec GitHub → "Add New Project" → sélectionne le dépôt</li>
+      <li><div class="check-icon">4</div><strong>Config</strong> → Framework Preset = "Other" · Root Directory = vide → "Deploy"</li>
+      <li><div class="check-icon">5</div><strong>Lien</strong> → récupère ton URL type upscale-gtd.vercel.app → envoie à tes apprenants</li>
+    </ul>
+
+    <h3>Mettre à jour la webapp</h3>
+    <div class="alert alert-success"><strong>✅ Procédure simple</strong> GitHub → ton dépôt → "Add file" → "Upload files" → glisse le nouveau index.html → "Commit changes". Vercel se met à jour automatiquement en 30 secondes.</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════
+     SECTION 5 — LANCEMENT
+═══════════════════════════════════ -->
+<div class="section" id="lancement">
+
+  <div class="block animate-in">
+    <div class="block-title">🚀 Étape 5</div>
+    <h2>Le planning de production 4 semaines</h2>
+
+    <div class="planning-grid">
+      <div class="planning-week">
+        <div class="planning-week-header" onclick="toggleWeek(this)">
+          <div class="planning-week-num">Semaine 1</div>
+          <div class="planning-week-title">Construire la formation</div>
+          <div class="planning-week-toggle">▼</div>
+        </div>
+        <div class="planning-week-body">
+          <div class="planning-day"><div class="planning-day-label">Lundi</div><div class="planning-day-tasks"><span>Upload PDFs sources dans NotebookLM</span><span>Briefing audio + Carte Mentale</span><span>Générer le plan de formation complet</span></div></div>
+          <div class="planning-day"><div class="planning-day-label">Mardi</div><div class="planning-day-tasks"><span>Générer et affiner Module 1</span><span>Générer et affiner Module 2</span></div></div>
+          <div class="planning-day"><div class="planning-day-label">Mercredi</div><div class="planning-day-tasks"><span>Générer et affiner Module 3</span><span>Générer et affiner Module 4</span></div></div>
+          <div class="planning-day"><div class="planning-day-label">Jeudi</div><div class="planning-day-tasks"><span>Module 5 + vérification cohérence globale</span><span>Ajustements inter-modules si besoin</span></div></div>
+          <div class="planning-day"><div class="planning-day-label">Vendredi</div><div class="planning-day-tasks"><span>Fiches d'apprentissage tous modules</span><span>Glossaire + FAQ + Guide d'étude</span><span>Quiz d'entrée et quiz final</span></div></div>
+        </div>
+      </div>
+
+      <div class="planning-week">
+        <div class="planning-week-header" onclick="toggleWeek(this)">
+          <div class="planning-week-num">Semaine 2</div>
+          <div class="planning-week-title">Habiller la formation</div>
+          <div class="planning-week-toggle">▼</div>
+        </div>
+        <div class="planning-week-body">
+          <div class="planning-day"><div class="planning-day-label">Lundi</div><div class="planning-day-tasks"><span>Slides tous modules + Infographies</span></div></div>
+          <div class="planning-day"><div class="planning-day-label">Mardi</div><div class="planning-day-tasks"><span>Podcasts audio tous modules</span><span>Upload sur Cloudinary</span></div></div>
+          <div class="planning-day"><div class="planning-day-label">Mercredi</div><div class="planning-day-tasks"><span>Contenu marketing : article blog + débat</span><span>Cartes mentales PNG + infographies réseaux</span></div></div>
+          <div class="planning-day"><div class="planning-day-label">Jeudi</div><div class="planning-day-tasks"><span>Relecture finale de tous les modules</span><span>Identifier 5 bêta-testeurs potentiels</span></div></div>
+          <div class="planning-day"><div class="planning-day-label">Vendredi</div><div class="planning-day-tasks"><span>Intégration complète dans la webapp avec Claude</span><span>Déploiement sur Vercel</span></div></div>
+        </div>
+      </div>
+
+      <div class="planning-week">
+        <div class="planning-week-header" onclick="toggleWeek(this)">
+          <div class="planning-week-num">Semaine 3</div>
+          <div class="planning-week-title">Bêta-test & plateforme</div>
+          <div class="planning-week-toggle">▼</div>
+        </div>
+        <div class="planning-week-body">
+          <div class="planning-day"><div class="planning-day-label">Lundi-Mardi</div><div class="planning-day-tasks"><span>Créer page de vente sur Gumroad ou Systeme.io</span><span>Configurer email automatique post-achat avec lien webapp</span></div></div>
+          <div class="planning-day"><div class="planning-day-label">Mercredi</div><div class="planning-day-tasks"><span>Envoyer accès bêta aux 5 testeurs (prix réduit 20-30€)</span></div></div>
+          <div class="planning-day"><div class="planning-day-label">Jeudi-Vendredi</div><div class="planning-day-tasks"><span>Collecter retours bêta</span><span>Appliquer corrections prioritaires</span><span>Récupérer témoignages</span></div></div>
+        </div>
+      </div>
+
+      <div class="planning-week">
+        <div class="planning-week-header" onclick="toggleWeek(this)">
+          <div class="planning-week-num">Semaine 4</div>
+          <div class="planning-week-title">Lancement officiel</div>
+          <div class="planning-week-toggle">▼</div>
+        </div>
+        <div class="planning-week-body">
+          <div class="planning-day"><div class="planning-day-label">Jour 1</div><div class="planning-day-tasks"><span>Post histoire personnelle — pourquoi ce sujet te touche</span></div></div>
+          <div class="planning-day"><div class="planning-day-label">Jour 2</div><div class="planning-day-tasks"><span>Post problème résolu — avant/après concret</span></div></div>
+          <div class="planning-day"><div class="planning-day-label">Jour 3</div><div class="planning-day-tasks"><span>Coulisses/aperçu contenu — montre ce que tu as construit</span></div></div>
+          <div class="planning-day"><div class="planning-day-label">Jour 4</div><div class="planning-day-tasks"><span>Témoignages bêta-testeurs + résultats concrets</span></div></div>
+          <div class="planning-day"><div class="planning-day-label">Jour 5</div><div class="planning-day-tasks"><span>Ouverture des ventes — offre lancement 48h prix réduit</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">❌ Erreurs à éviter au lancement</div>
+    <div class="alert alert-danger"><strong>Erreur 1 — Lancer sans bêta-testeurs</strong> Le bêta-test n'est pas optionnel. Il te donne du cash, des retours réels et des témoignages — les 3 choses dont tu as le plus besoin au lancement.</div>
+    <div class="alert alert-danger"><strong>Erreur 2 — Fixer un prix trop bas</strong> Un prix trop bas dévalue la formation et attire des clients peu engagés. Commence à 47€ minimum pour une formation complète avec webapp.</div>
+    <div class="alert alert-danger"><strong>Erreur 3 — Parler de la formation avant de parler du problème</strong> Tes 3 premiers posts de lancement parlent du problème de ton audience, pas de ta formation. La formation arrive seulement au jour 5.</div>
+    <div class="alert alert-warn"><strong>💡 Règle d'or</strong> Chaque post sur les réseaux = une brique de crédibilité. Poste tous les jours pendant 4 semaines avant le lancement, même quand tu produis.</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════
+     SECTION 6 — OUTILS
+═══════════════════════════════════ -->
+<div class="section" id="outils">
+
+  <div class="block animate-in">
+    <div class="block-title">🛠️ Stack complète</div>
+    <h2>Tous les outils du système Upscale</h2>
+    <p>Tous gratuits ou avec un plan gratuit suffisant pour démarrer.</p>
+
+    <h3>Production du contenu</h3>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <span class="tool-icon">📓</span>
+        <div class="tool-badge">Gratuit</div>
+        <div class="tool-name">NotebookLM</div>
+        <div class="tool-desc">Génération des modules, ressources, podcasts, quiz. Le cœur du système.</div>
+        <a href="https://notebooklm.google.com" target="_blank" class="tool-link">→ notebooklm.google.com</a>
+      </div>
+      <div class="tool-card">
+        <span class="tool-icon">🤖</span>
+        <div class="tool-badge">Gratuit</div>
+        <div class="tool-name">Claude (Anthropic)</div>
+        <div class="tool-desc">Création de la webapp, intégration du contenu, génération de code.</div>
+        <a href="https://claude.ai" target="_blank" class="tool-link">→ claude.ai</a>
+      </div>
+    </div>
+
+    <h3>Hébergement des médias</h3>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <span class="tool-icon">☁️</span>
+        <div class="tool-badge">Gratuit</div>
+        <div class="tool-name">Cloudinary</div>
+        <div class="tool-desc">Audio (MP3/MP4) et images PNG. Lecture directe dans la webapp sans blocage.</div>
+        <a href="https://cloudinary.com" target="_blank" class="tool-link">→ cloudinary.com</a>
+      </div>
+      <div class="tool-card">
+        <span class="tool-icon">📁</span>
+        <div class="tool-badge">Gratuit</div>
+        <div class="tool-name">Google Drive</div>
+        <div class="tool-desc">PDFs (fiches, slides). Partage public avec lien. Intégration iframe pour les slides.</div>
+        <a href="https://drive.google.com" target="_blank" class="tool-link">→ drive.google.com</a>
+      </div>
+    </div>
+
+    <h3>Mise en ligne</h3>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <span class="tool-icon">🐙</span>
+        <div class="tool-badge">Gratuit</div>
+        <div class="tool-name">GitHub</div>
+        <div class="tool-desc">Stockage du code de la webapp. Nécessaire pour connecter Vercel.</div>
+        <a href="https://github.com" target="_blank" class="tool-link">→ github.com</a>
+      </div>
+      <div class="tool-card">
+        <span class="tool-icon">▲</span>
+        <div class="tool-badge">Gratuit</div>
+        <div class="tool-name">Vercel</div>
+        <div class="tool-desc">Mise en ligne de la webapp. URL gratuite type upscale-gtd.vercel.app. Mise à jour auto.</div>
+        <a href="https://vercel.com" target="_blank" class="tool-link">→ vercel.com</a>
+      </div>
+    </div>
+
+    <h3>Vente et email</h3>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <span class="tool-icon">💳</span>
+        <div class="tool-badge">Gratuit jusqu'à 2000 contacts</div>
+        <div class="tool-name">Systeme.io</div>
+        <div class="tool-desc">Page de vente + newsletter + email automatique post-achat. Tout en un.</div>
+        <a href="https://systeme.io" target="_blank" class="tool-link">→ systeme.io</a>
+      </div>
+      <div class="tool-card">
+        <span class="tool-icon">🛍️</span>
+        <div class="tool-badge">Commission ~10%</div>
+        <div class="tool-name">Gumroad</div>
+        <div class="tool-desc">Alternative plus simple. Idéal pour démarrer rapidement sans configuration.</div>
+        <a href="https://gumroad.com" target="_blank" class="tool-link">→ gumroad.com</a>
+      </div>
+    </div>
+
+    <h3>Design (optionnel)</h3>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <span class="tool-icon">🎨</span>
+        <div class="tool-badge">Gratuit</div>
+        <div class="tool-name">Canva</div>
+        <div class="tool-desc">Mise en page des fiches PDF et infographies aux couleurs d'Upscale. Kit de marque à créer une seule fois.</div>
+        <a href="https://canva.com" target="_blank" class="tool-link">→ canva.com</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">💰 Modèle économique recommandé</div>
+    <h2>Structure de prix Upscale</h2>
+    <ul class="checklist">
+      <li><div class="check-icon">🆓</div><strong>Upscale Starter — Gratuit</strong> : 1 formation offerte (Module 1 uniquement) + inscription newsletter</li>
+      <li><div class="check-icon">💳</div><strong>Upscale Member — 14,90€/mois</strong> : Toute la bibliothèque + 1 nouvelle ressource par mois</li>
+      <li><div class="check-icon">♾️</div><strong>Upscale Life — 97€ one-shot</strong> : Accès à vie à une formation au choix</li>
+      <li><div class="check-icon">🚀</div><strong>Offre bêta — 20-30€</strong> : Pour les 5-10 premiers testeurs avant le lancement officiel</li>
+    </ul>
+    <div class="alert alert-warn"><strong>💡 Conseil</strong> Commence toujours par l'offre bêta. Cash immédiat + retours réels + témoignages = les 3 ingrédients du lancement réussi.</div>
+  </div>
+
+</div>
+
+</div><!-- /content -->
+
+<div class="toast" id="toast">✅ Copié dans le presse-papier !</div>
+
+<script>
+const prompts = [
+  // 0 = prompt principal (trop long, géré séparément)
+  '',
+  // 1 = plan
+  'Génère le plan complet de la formation [SUJET] avec :\n- Un titre accrocheur pour la formation\n- La promesse (ce que l\'apprenant gagnera concrètement)\n- La liste des modules avec titre, objectif et durée\n- La progression des niveaux et badges',
+  // 2 = module
+  'Crée le module [N] — [Titre du module]\nen suivant la structure complète en 6 sections.',
+  // 3 = cohérence
+  'Vérifie que la progression pédagogique est cohérente\nentre tous les modules :\n- Les concepts s\'enchaînent-ils logiquement ?\n- Y a-t-il des répétitions inutiles ?\n- Y a-t-il des notions importantes manquantes ?\n- Le niveau de difficulté progresse-t-il bien ?',
+  // 4 = fiche
+  'Crée une fiche d\'apprentissage complète pour le module [N]\n— [Titre] uniquement.\nFormat : utilisable sur écran ET imprimable.\n\nStructure obligatoire :\n🎯 EN-TÊTE : titre + niveau + badge + promesse en 1 phrase\n🧠 L\'ESSENTIEL : analogie clé (2-3 lignes) + 3 règles d\'or\n   + mécanisme "pourquoi ça marche" (2 lignes max)\n🛠️ MES OUTILS : tableau 3 colonnes Outil/Pour qui/Mon choix ✓\n❌ PIÈGES : 3 erreurs → solution en 5 mots max\n🎯 MON DÉFI : 3 lignes max + case à cocher\n📝 MES NOTES : 3-4 lignes vides\n\nContraintes : max 400 mots · langage ultra-condensé',
+  // 5 = podcast analyse
+  'Génère un résumé audio "Analyse approfondie"\npour le module [N] — [Titre] uniquement.\nObjectif : introduction avant lecture du module.\nDurée cible : 5-7 minutes.\n\n- Commence par l\'accroche "Et si..." du module\n- Alterne entre présentation du problème,\n  analogie principale, 2-3 points clés en avant-goût\n- Termine : invitation à lire le module complet\n- Ne révèle pas tout — donne envie',
+  // 6 = podcast briefing
+  'Génère un résumé audio "Briefing"\npour le module [N] — [Titre] uniquement.\nDurée cible : 5-7 minutes. Ton : direct, coach, zéro blabla.\n\nStructure :\n· 30s : le problème que ce module résout\n· 1min : l\'analogie principale simplifiée\n· 2min : les 3 points clés en avant-goût\n· 1min : le mécanisme "pourquoi ça marche"\n· 30s : invitation à lire le module',
+  // 7 = infographie
+  'Crée une infographie sur le concept de [thème] — module [N].\nStyle : dynamique et motivant.\nStructure : 1 titre accrocheur + 5 points clés maximum\n+ 1 phrase d\'action finale.',
+  // 8 = slides
+  'Crée une présentation pour le module [N] — [Titre] uniquement.\n5 slides maximum :\n- Slide 1 : Accroche + promesse\n- Slides 2-3-4 : Les 3 points clés\n- Slide 5 : Le défi + badge à débloquer',
+  // 9 = carte mentale
+  'Crée une carte mentale de toute la formation [SUJET].\nNœud central : "[SUJET] — Passe au niveau supérieur"\nBranches principales : les concepts clés de chaque module',
+  // 10 = article blog
+  'Génère un article de blog de 600 mots sur [concept].\nTon : accessible et motivant.\nStructure : accroche → problème → solution\n→ exemple concret → appel à l\'action vers la formation Upscale.'
+];
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function copyPrompt(index) {
+  if (index === 0) {
+    // Copier le prompt principal depuis le pre
+    const preEl = document.querySelector('#prompts .prompt-box pre');
+    navigator.clipboard.writeText(preEl.textContent).then(() => showToast());
+  } else {
+    navigator.clipboard.writeText(prompts[index]).then(() => showToast());
+  }
+}
+
+function copyText(btn, text) {
+  navigator.clipboard.writeText(text).then(() => showToast());
+}
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function toggleWeek(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.planning-week-toggle');
+  body.classList.toggle('open');
+  toggle.classList.toggle('open');
+}
+</script>
+</body>
+</html>
